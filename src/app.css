@@ -1,0 +1,19 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+
+/* Ensure the app takes the full height of the viewport */
+html,
+body,
+#app {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+}
+
+main {
+    flex: 1;
+}
