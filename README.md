@@ -24,17 +24,20 @@ A full-featured, fast, and modern QR code generator built with **Svelte 5** and 
 ## 🚀 Getting Started
 
 ### 1. Clone the repo
+
 ```bash
 git clone https://github.com/devxhub/qr-code-generator.git
 cd qr-code-generator
 ```
 
 ### 2. Install dependencies
+
 ```bash
 pnpm install
 ```
 
 ### 3. Start the development server
+
 ```bash
 pnpm run dev
 ```
@@ -44,6 +47,7 @@ Visit `http://localhost:5173` to see it in action.
 ---
 
 ## 🛠 Tech Stack
+
 - [Svelte 5 (Runes)](https://svelte.dev/docs)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [QRCode.js](https://github.com/soldair/node-qrcode)
@@ -54,6 +58,7 @@ Visit `http://localhost:5173` to see it in action.
 ## 🌐 Deployment
 
 This app is ready for deployment to platforms like:
+
 - **Vercel**
 - **Netlify**
 - **Cloudflare Pages**

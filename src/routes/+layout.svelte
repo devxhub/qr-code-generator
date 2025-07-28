@@ -43,7 +43,7 @@
 			href="https://devxhub.com"
 			target="_blank"
 			rel="noopener noreferrer"
-			class="text-blue-600 hover:underline dark:text-blue-400">Devxhub Limited</a
+			class="text-blue-600 hover:underline dark:text-blue-400">Devxhub Pvt. Ltd.</a
 		>. All rights reserved.
 	</p>
 </footer>

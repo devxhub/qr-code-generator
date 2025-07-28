@@ -1,39 +1,55 @@
 <script lang="ts">
-	import { writable } from 'svelte/store';
-	import QRCode from 'qrcode';
-	import { jsPDF } from 'jspdf';
+	import QRCodeCustomizer from '$lib/components/QRCodeCustomizer.svelte';
+	import QRCodeForm from '$lib/components/QRCodeForm.svelte';
+	import QRCodePreview from '$lib/components/QRCodePreview.svelte';
+	import { generateQRContent } from '$lib/qr-generator.js';
+	import type { QRCodeData, QRCodeOptions, QRCodeType } from '$lib/types.js';
 
-	type QRCodeType = 'url' | 'vcard' | 'text' | 'sms' | 'email' | 'wifi';
-	type QRCodeData = {
-		type: QRCodeType;
-		data: Record<string, string>;
-	};
-	type QRCodeOptions = {
-		width: number;
-		height: number;
-	};
-
-	const selectedType = writable<QRCodeType>('url');
-
-	const qrData = writable<QRCodeData>({
+	let selectedType: QRCodeType = $state('url');
+	let qrData: QRCodeData = $state({
 		type: 'url',
 		data: {}
 	});
-	const options = writable<QRCodeOptions>({
-		width: 256,
-		height: 256
+	let options: QRCodeOptions = $state({
+		size: 400,
+		foregroundColor: '#000000',
+		backgroundColor: '#ffffff',
+		errorCorrection: 'M'
 	});
-	const qrCodeDataUrl = writable('');
 
-	const types: QRCodeType[] = ['url', 'vcard', 'text', 'sms', 'email', 'wifi'];
+	const types: { value: QRCodeType; label: string }[] = [
+		{ value: 'url', label: 'Website URL' },
+		{ value: 'vcard', label: 'Contact Card (vCard)' },
+		{ value: 'text', label: 'Plain Text' },
+		{ value: 'sms', label: 'SMS Message' },
+		{ value: 'email', label: 'Email' },
+		{ value: 'wifi', label: 'WiFi Network' },
+		{ value: 'phone', label: 'Phone Number' },
+		{ value: 'location', label: 'GPS Location' }
+	];
 
-	const errors = writable<string[]>([]);
+	let errors: string[] = $state([]);
+	let qrContent: string = $state('');
+
+	$effect(() => {
+		qrData.type = selectedType;
+		qrData.data = {};
+		errors = [];
+	});
+
+	$effect(() => {
+		if (validateForm()) {
+			qrContent = generateQRContent(qrData);
+		} else {
+			qrContent = '';
+		}
+	});
 
 	function validateForm(): boolean {
 		const currentErrors: string[] = [];
-		const data = $qrData.data;
+		const data = qrData.data;
 
-		switch ($qrData.type) {
+		switch (qrData.type) {
 			case 'url':
 				if (!data.url || !/^https?:\/\/.+/.test(data.url)) {
 					currentErrors.push('Please enter a valid URL.');
@@ -51,327 +67,177 @@
 				break;
 			case 'sms':
 				if (!data.phone) currentErrors.push('Phone number is required.');
-				if (!data.message) currentErrors.push('Message is required.');
 				break;
 			case 'email':
 				if (!data.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
 					currentErrors.push('Please enter a valid email address.');
 				}
-				if (!data.subject) currentErrors.push('Subject is required.');
-				if (!data.message) currentErrors.push('Message is required.');
 				break;
 			case 'wifi':
-				if (!data.ssid) currentErrors.push('SSID is required.');
-				if (!data.password) currentErrors.push('Password is required.');
+				if (!data.ssid) currentErrors.push('Network name (SSID) is required.');
+				if (!data.encryption) currentErrors.push('Security type is required.');
+				if (data.encryption !== 'nopass' && !data.password) {
+					currentErrors.push('Password is required for secured networks.');
+				}
+				break;
+			case 'phone':
+				if (!data.phone) currentErrors.push('Phone number is required.');
+				break;
+			case 'location':
+				if (!data.latitude || !data.longitude) {
+					currentErrors.push('Latitude and longitude are required.');
+				}
+				if (
+					data.latitude &&
+					(isNaN(Number(data.latitude)) || Math.abs(Number(data.latitude)) > 90)
+				) {
+					currentErrors.push('Latitude must be between -90 and 90.');
+				}
+				if (
+					data.longitude &&
+					(isNaN(Number(data.longitude)) || Math.abs(Number(data.longitude)) > 180)
+				) {
+					currentErrors.push('Longitude must be between -180 and 180.');
+				}
 				break;
 		}
 
-		errors.set(currentErrors);
+		errors = currentErrors;
 		return currentErrors.length === 0;
 	}
 
-	async function generateQRCode() {
-		if (!validateForm()) {
-			return;
-		}
-
-		let content = '';
-
-		switch ($qrData.type) {
-			case 'url':
-				content = $qrData.data.url || '';
-				break;
-			case 'vcard':
-				content = `BEGIN:VCARD\nVERSION:3.0\nN:${$qrData.data.name}\nTEL:${$qrData.data.phone}\nEMAIL:${$qrData.data.email}\nORG:${$qrData.data.org}\nEND:VCARD`;
-				break;
-			case 'text':
-				content = $qrData.data.text || '';
-				break;
-			case 'sms':
-				content = `SMSTO:${$qrData.data.phone}:${$qrData.data.message}`;
-				break;
-			case 'email':
-				content = `mailto:${$qrData.data.email}?subject=${encodeURIComponent($qrData.data.subject)}&body=${encodeURIComponent($qrData.data.message)}`;
-				break;
-			case 'wifi':
-				content = `WIFI:T:${$qrData.data.encryption};S:${$qrData.data.ssid};P:${$qrData.data.password};;`;
-				break;
-		}
-
-		try {
-			const dataUrl = await QRCode.toDataURL(content, {
-				width: $options.width,
-				height: $options.height,
-				margin: 1
-			});
-			qrCodeDataUrl.set(dataUrl);
-		} catch (err) {
-			console.error('Error generating QR code:', err);
-		}
+	function updateQRData(data: Record<string, string>): void {
+		qrData = {
+			...qrData,
+			data
+		};
 	}
 
-	function downloadQRCode(format: string) {
-		const url = $qrCodeDataUrl;
-		if (!url) return;
-
-		if (format === 'PDF') {
-			const pdf = new jsPDF({
-				orientation: 'portrait',
-				unit: 'px',
-				format: [$options.width + 40, $options.height + 40]
-			});
-			pdf.addImage(url, 'PNG', 20, 20, $options.width, $options.height);
-			pdf.save('qrcode.pdf');
-		} else {
-			const link = document.createElement('a');
-			link.download = `qrcode.${format.toLowerCase()}`;
-			link.href = url;
-			document.body.appendChild(link);
-			link.click();
-			document.body.removeChild(link);
-		}
+	function updateOptions(newOptions: QRCodeOptions): void {
+		options = newOptions;
 	}
 
-	function resetForm() {
-		selectedType.set('url');
-		qrData.set({ type: 'url', data: {} });
-		options.set({ width: 256, height: 256 });
-		qrCodeDataUrl.set('');
+	function handleTypeChange(event: Event): void {
+		const target = event.target as HTMLSelectElement;
+		selectedType = target.value as QRCodeType;
 	}
-
-	$effect(() => {
-		qrData.update((d: QRCodeData) => ({ ...d, type: $selectedType }));
-	});
 </script>
 
-<!-- UI -->
-<div class="mx-auto w-full max-w-4xl p-4">
-	<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-		<!-- Settings Panel -->
-		<div class="rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800">
-			<div class="mb-4 flex items-center justify-between">
-				<h2 class="text-2xl font-bold dark:text-white">QR Code Settings</h2>
-				<button
-					onclick={resetForm}
-					class="cursor-pointer rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700"
-					>Reset</button
-				>
+<svelte:head>
+	<title>QR Code Generator - Create QR Codes for URLs, vCards, WiFi, and More</title>
+	<meta
+		name="description"
+		content="Generate QR codes for websites, contact cards, WiFi networks, and more. Free, fast, and works on all devices."
+	/>
+</svelte:head>
+
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+	<div class="container mx-auto px-4 py-8">
+		<div class="mx-auto max-w-6xl">
+			<!-- Header -->
+			<div class="mb-8 text-center">
+				<h1 class="mb-4 text-4xl font-bold text-gray-900 dark:text-white">QR Code Generator</h1>
+				<p class="text-lg text-gray-600 dark:text-gray-300">
+					Create QR codes for websites, contact cards, WiFi networks, and more
+				</p>
 			</div>
 
-			<!-- Error Messages -->
-			{#if $errors.length > 0}
-				<div class="mb-4 rounded-md bg-red-100 p-4 text-red-700">
-					<ul>
-						{#each $errors as error}
-							<li>{error}</li>
-						{/each}
-					</ul>
-				</div>
-			{/if}
-
-			<div class="mb-4">
-				<label for="qr-code-type" class="mb-2 block text-sm font-medium dark:text-white"
-					>QR Code Type</label
-				>
-				<select
-					id="qr-code-type"
-					bind:value={$selectedType}
-					class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-				>
-					{#each types as type}
-						<option value={type}>{type.toUpperCase()}</option>
-					{/each}
-				</select>
-			</div>
-
-			{#if $selectedType === 'url'}
-				<input
-					class="mb-4 w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-					placeholder="https://example.com"
-					bind:value={$qrData.data.url}
-				/>
-			{:else if $selectedType === 'vcard'}
-				<div class="space-y-2">
-					<input
-						class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-						placeholder="Name"
-						bind:value={$qrData.data.name}
-					/>
-					<input
-						class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-						placeholder="Phone"
-						bind:value={$qrData.data.phone}
-					/>
-					<input
-						class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-						placeholder="Email"
-						bind:value={$qrData.data.email}
-					/>
-					<input
-						class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-						placeholder="Organization"
-						bind:value={$qrData.data.org}
-					/>
-				</div>
-			{:else if $selectedType === 'text'}
-				<textarea
-					class="mb-4 w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-					maxlength="300"
-					rows="4"
-					bind:value={$qrData.data.text}
-				></textarea>
-			{:else if $selectedType === 'sms'}
-				<div class="space-y-2">
-					<input
-						class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-						placeholder="Phone Number"
-						bind:value={$qrData.data.phone}
-					/>
-					<textarea
-						class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-						placeholder="Message"
-						bind:value={$qrData.data.message}
-					></textarea>
-				</div>
-			{:else if $selectedType === 'email'}
-				<div class="space-y-2">
-					<input
-						class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-						placeholder="Email"
-						bind:value={$qrData.data.email}
-					/>
-					<input
-						class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-						placeholder="Subject"
-						bind:value={$qrData.data.subject}
-					/>
-					<textarea
-						class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-						placeholder="Message"
-						bind:value={$qrData.data.message}
-					></textarea>
-				</div>
-			{:else if $selectedType === 'wifi'}
-				<div class="space-y-2">
-					<input
-						class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-						placeholder="SSID"
-						bind:value={$qrData.data.ssid}
-					/>
-					<input
-						class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-						placeholder="Password"
-						bind:value={$qrData.data.password}
-					/>
-					<select
-						class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-						bind:value={$qrData.data.encryption}
+			<div class="grid gap-8 lg:grid-cols-2">
+				<!-- Left Column: Form -->
+				<div class="space-y-6">
+					<!-- Type Selection -->
+					<div
+						class="rounded-lg border bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-gray-800"
 					>
-						<option value="WPA">WPA/WPA2</option>
-						<option value="WEP">WEP</option>
-					</select>
+						<label
+							for="qr-type-select"
+							class="mb-2 block text-sm font-medium text-gray-700 dark:text-white"
+						>
+							QR Code Type
+						</label>
+						<select
+							id="qr-type-select"
+							bind:value={selectedType}
+							onchange={handleTypeChange}
+							class="w-full rounded-md border p-3 dark:bg-gray-700 dark:text-white"
+						>
+							{#each types as type (type.value)}
+								<option value={type.value}>{type.label}</option>
+							{/each}
+						</select>
+					</div>
+
+					<!-- Form Fields -->
+					<div
+						class="rounded-lg border bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-gray-800"
+					>
+						<h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Enter Details</h2>
+						<QRCodeForm {selectedType} {qrData} onDataChange={updateQRData} />
+					</div>
+
+					<!-- Customization Options -->
+					<QRCodeCustomizer {options} onUpdate={updateOptions} />
+
+					<!-- Error Messages -->
+					{#if errors.length > 0}
+						<div
+							class="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-600 dark:bg-red-900/20"
+						>
+							<div class="flex">
+								<div class="ml-3">
+									<h3 class="text-sm font-medium text-red-800 dark:text-red-200">
+										Please fix the following errors:
+									</h3>
+									<div class="mt-2 text-sm text-red-700 dark:text-red-300">
+										<ul class="list-disc space-y-1 pl-5">
+											{#each errors as error, index (index)}
+												<li>{error}</li>
+											{/each}
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+					{/if}
 				</div>
-			{/if}
 
-			<div class="my-4 grid grid-cols-2 gap-4">
-				<input
-					type="number"
-					min="128"
-					max="1024"
-					bind:value={$options.width}
-					class="rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-					placeholder="Width"
-				/>
-				<input
-					type="number"
-					min="128"
-					max="1024"
-					bind:value={$options.height}
-					class="rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-					placeholder="Height"
-				/>
-			</div>
+				<!-- Right Column: Preview -->
+				<div class="space-y-6">
+					<div
+						class="rounded-lg border bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-gray-800"
+					>
+						<h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+							QR Code Preview
+						</h2>
 
-			<button
-				onclick={generateQRCode}
-				class="w-full cursor-pointer rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-				>Generate QR Code</button
-			>
-		</div>
-
-		<!-- QR Preview Panel -->
-		<div class="rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800">
-			<h2 class="mb-4 text-center text-2xl font-bold dark:text-white">QR Code Preview</h2>
-			{#if $qrCodeDataUrl}
-				<div class="flex flex-col items-center gap-4">
-					<img src={$qrCodeDataUrl} alt="Generated QR Code" class="rounded border" />
-					<div class="flex flex-wrap gap-2">
-						<button
-							onclick={() => downloadQRCode('PNG')}
-							class="flex min-w-25 cursor-pointer rounded-md bg-green-600 px-4 py-2 text-white hover:bg-green-700"
-						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								class="h-5 w-5"
-								fill="none"
-								viewBox="0 0 24 24"
-								stroke="currentColor"
+						{#if qrContent && errors.length === 0}
+							<QRCodePreview content={qrContent} {options} />
+						{:else}
+							<div
+								class="flex h-64 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600"
 							>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
-								/>
-							</svg> PNG
-						</button>
-						<button
-							onclick={() => downloadQRCode('JPEG')}
-							class="flex min-w-25 cursor-pointer rounded-md bg-green-600 px-4 py-2 text-white hover:bg-green-700"
-						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								class="h-5 w-5"
-								fill="none"
-								viewBox="0 0 24 24"
-								stroke="currentColor"
-							>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
-								/>
-							</svg> JPEG
-						</button>
-						<button
-							onclick={() => downloadQRCode('PDF')}
-							class="flex min-w-25 cursor-pointer rounded-md bg-green-600 px-4 py-2 text-white hover:bg-green-700"
-						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								class="h-5 w-5"
-								fill="none"
-								viewBox="0 0 24 24"
-								stroke="currentColor"
-							>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
-								/>
-							</svg> PDF
-						</button>
+								<p class="text-gray-500 dark:text-gray-400">
+									{errors.length > 0
+										? 'Fix errors to generate QR code'
+										: 'Fill in the details to generate QR code'}
+								</p>
+							</div>
+						{/if}
 					</div>
 				</div>
-			{:else}
-				<div
-					class="flex h-64 items-center justify-center rounded-lg bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
-				>
-					QR code preview will appear here.
-				</div>
-			{/if}
+			</div>
+
+			<!-- Footer -->
+			<footer
+				class="mt-16 border-t pt-8 text-center text-gray-600 dark:border-gray-600 dark:text-gray-400"
+			>
+				<p class="mb-2">
+					All QR codes are generated locally in your browser. No data is sent to our servers.
+				</p>
+				<p class="text-sm">
+					Supports industry-standard formats for maximum compatibility across all devices.
+				</p>
+			</footer>
 		</div>
 	</div>
 </div>
