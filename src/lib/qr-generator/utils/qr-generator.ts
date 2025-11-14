@@ -1,11 +1,16 @@
-import type { QRCodeData } from './types.js';
+import type { QRCodeData } from '../types';
 
 export function generateQRContent(qrData: QRCodeData): string {
 	let content = '';
 
 	switch (qrData.type) {
 		case 'url': {
-			content = qrData.data.url || '';
+			let url = qrData.data.url || '';
+			// Add protocol if missing
+			if (url && !url.startsWith('http://') && !url.startsWith('https://')) {
+				url = 'https://' + url;
+			}
+			content = url;
 			break;
 		}
 		case 'vcard': {

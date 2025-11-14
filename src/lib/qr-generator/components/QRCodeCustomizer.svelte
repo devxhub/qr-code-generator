@@ -1,8 +1,6 @@
 <script lang="ts">
-	import type { QRCodeOptions } from '../types.js';
-	import { Input } from '$lib/components/ui';
-	import { Select } from '$lib/components/ui';
-	import { Label } from '$lib/components/ui';
+	import { Input, Label, Select } from '$lib/shared/components/ui';
+	import type { QRCodeOptions } from '../types';
 
 	interface Props {
 		options: QRCodeOptions;
@@ -27,13 +25,18 @@
 	}
 </script>
 
-<div class="space-y-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+<div
+	class="space-y-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950"
+>
 	<h3 class="text-lg font-semibold text-slate-900 dark:text-white">Customize QR Code</h3>
 
 	<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 		<!-- Size Range Input -->
 		<div class="space-y-2">
-			<Label htmlFor="size-range">Size: <span class="font-semibold text-slate-900 dark:text-white">{options.size}px</span></Label>
+			<Label htmlFor="size-range"
+				>Size: <span class="font-semibold text-slate-900 dark:text-white">{options.size}px</span
+				></Label
+			>
 			<input
 				id="size-range"
 				type="range"
@@ -42,7 +45,7 @@
 				step="50"
 				value={options.size}
 				oninput={handleInput('size')}
-				class="w-full cursor-pointer accent-slate-900 dark:accent-slate-50"
+				class="w-full cursor-pointer accent-blue-600 dark:accent-blue-400"
 			/>
 		</div>
 

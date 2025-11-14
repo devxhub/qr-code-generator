@@ -27,6 +27,7 @@
 		companyUrl?: string;
 		description?: string;
 		logoSrc?: string;
+		brandName?: string;
 		sections?: FooterSection[];
 		addresses?: Address[];
 		socialLinks?: SocialLink[];
@@ -35,15 +36,15 @@
 	const defaultSections: FooterSection[] = [
 		{
 			title: 'Features',
-			items: ['URL QR Codes', 'Contact Cards', 'WiFi Networks', 'SMS & Email']
+			items: ['Feature 1', 'Feature 2', 'Feature 3', 'Feature 4']
 		},
 		{
-			title: 'Export Options',
-			items: ['PNG Format', 'JPEG Format', 'PDF Export', 'Custom Colors']
+			title: 'Options',
+			items: ['Option 1', 'Option 2', 'Option 3', 'Option 4']
 		},
 		{
 			title: 'Products',
-			items: ['Password Generator', 'Calculator', 'QR Code Generator']
+			items: ['Product 1', 'Product 2', 'Product 3']
 		}
 	];
 
@@ -83,8 +84,9 @@
 	const {
 		companyName = 'Devxhub Pvt. Ltd.',
 		companyUrl = 'https://devxhub.com',
-		description = 'Create beautiful, customizable QR codes for any purpose.',
+		description = 'Create beautiful, customizable tools for any purpose.',
 		logoSrc = '/logo.webp',
+		brandName = 'App',
 		sections = defaultSections,
 		addresses = defaultAddresses,
 		socialLinks = defaultSocialLinks
@@ -100,8 +102,8 @@
 			<!-- Brand Section -->
 			<div class="mb-8">
 				<div class="mb-4 flex items-center gap-3">
-					<img src={logoSrc} alt="Devxhub Logo" class="h-10 w-10 object-contain" />
-					<span class="text-lg font-semibold text-white">QR Generator</span>
+					<img src={logoSrc} alt="Logo" class="h-10 w-10 object-contain" />
+					<span class="text-lg font-semibold text-white">{brandName}</span>
 				</div>
 				<p class="text-sm leading-relaxed text-slate-400">
 					{description}
@@ -119,14 +121,16 @@
 							{#each section.items as item (item)}
 								<li>
 									{#if section.title === 'Products'}
-										<a
-											href="#"
+										<button
+											type="button"
 											class="text-sm text-slate-400 transition-colors duration-200 hover:text-slate-200"
 										>
 											{item}
-										</a>
+										</button>
 									{:else}
-										<span class="cursor-default text-sm text-slate-400 transition-colors duration-200 hover:text-slate-200">
+										<span
+											class="cursor-default text-sm text-slate-400 transition-colors duration-200 hover:text-slate-200"
+										>
 											{item}
 										</span>
 									{/if}

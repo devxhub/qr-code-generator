@@ -1,9 +1,9 @@
 <script lang="ts">
-	import type { QRCodeData, QRCodeType } from '../types.js';
+	import type { QRCodeData, QRCodeType } from '../types';
 
 	type Props = {
-		selectedType: QRCodeType;
-		qrData: QRCodeData;
+		selectedType: QRCodeType | 'contact' | string;
+		qrData: QRCodeData | { type: 'contact'; data: Record<string, string> };
 		onDataChange: (data: Record<string, string>) => void;
 	};
 
@@ -39,11 +39,72 @@
 
 {#if selectedType === 'url'}
 	<input
-		class="mb-4 w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-		placeholder="https://example.com"
+		type="url"
+		class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+		placeholder="https://example.com or example.com"
 		value={qrData.data.url || ''}
 		oninput={handleInput('url')}
+		aria-label="Website URL"
 	/>
+{:else if selectedType === 'contact'}
+	<div class="space-y-3">
+		<input
+			type="text"
+			class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+			value={qrData.data.firstName || ''}
+			oninput={handleInput('firstName')}
+			placeholder="First Name"
+			aria-label="First Name"
+		/>
+		<input
+			type="text"
+			class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+			value={qrData.data.lastName || ''}
+			oninput={handleInput('lastName')}
+			placeholder="Last Name"
+			aria-label="Last Name"
+		/>
+		<input
+			type="text"
+			class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+			value={qrData.data.organization || ''}
+			oninput={handleInput('organization')}
+			placeholder="Organization"
+			aria-label="Organization"
+		/>
+		<input
+			type="tel"
+			class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+			value={qrData.data.phone || ''}
+			oninput={handleInput('phone')}
+			placeholder="Phone"
+			aria-label="Phone"
+		/>
+		<input
+			type="email"
+			class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+			value={qrData.data.email || ''}
+			oninput={handleInput('email')}
+			placeholder="Email"
+			aria-label="Email"
+		/>
+		<input
+			type="url"
+			class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+			value={qrData.data.website || ''}
+			oninput={handleInput('website')}
+			placeholder="Website"
+			aria-label="Website"
+		/>
+		<textarea
+			class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+			value={qrData.data.address || ''}
+			oninput={handleInput('address')}
+			placeholder="Address"
+			rows="2"
+			aria-label="Address"
+		></textarea>
+	</div>
 {:else if selectedType === 'vcard'}
 	<div class="space-y-2">
 		<input
