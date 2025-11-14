@@ -1,5 +1,7 @@
 <script lang="ts">
 	import '../app.css';
+	import Header from '$lib/components/Header.svelte';
+	import Footer from '$lib/components/Footer.svelte';
 
 	let { children } = $props();
 </script>
@@ -28,22 +30,12 @@
 	<meta name="twitter:image" content="https://qr.devxhub.com/preview.png" />
 </svelte:head>
 
-<header class="bg-[#1E293B] p-4 text-white">
-	<h1 class="text-xl font-bold">QR Code Generator</h1>
-</header>
+<Header />
 
-<main class="p-4">
-	{@render children()}
+<main class="flex flex-1 flex-col bg-gradient-to-b from-slate-50 to-white">
+	<div class="mx-auto w-full max-w-7xl px-6 py-8">
+		{@render children()}
+	</div>
 </main>
 
-<footer class="bg-[#0F172A] p-4 text-center text-white">
-	<p>
-		&copy; {new Date().getFullYear()}
-		<a
-			href="https://devxhub.com"
-			target="_blank"
-			rel="noopener noreferrer"
-			class="text-blue-600 hover:underline dark:text-blue-400">Devxhub Pvt. Ltd.</a
-		>. All rights reserved.
-	</p>
-</footer>
+<Footer />

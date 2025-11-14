@@ -1,5 +1,8 @@
 <script lang="ts">
 	import type { QRCodeOptions } from '../types.js';
+	import { Input } from '$lib/components/ui';
+	import { Select } from '$lib/components/ui';
+	import { Label } from '$lib/components/ui';
 
 	interface Props {
 		options: QRCodeOptions;
@@ -24,12 +27,13 @@
 	}
 </script>
 
-<div class="space-y-4 rounded-lg border p-4 dark:border-gray-600 dark:bg-gray-800">
-	<h3 class="text-lg font-semibold dark:text-white">Customize QR Code</h3>
+<div class="space-y-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+	<h3 class="text-lg font-semibold text-slate-900 dark:text-white">Customize QR Code</h3>
 
-	<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-		<div>
-			<label for="size-range" class="mb-1 block text-sm font-medium dark:text-white">Size</label>
+	<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+		<!-- Size Range Input -->
+		<div class="space-y-2">
+			<Label htmlFor="size-range">Size: <span class="font-semibold text-slate-900 dark:text-white">{options.size}px</span></Label>
 			<input
 				id="size-range"
 				type="range"
@@ -38,51 +42,46 @@
 				step="50"
 				value={options.size}
 				oninput={handleInput('size')}
-				class="w-full"
+				class="w-full cursor-pointer accent-slate-900 dark:accent-slate-50"
 			/>
-			<span class="text-xs text-gray-500">{options.size}px</span>
 		</div>
 
-		<div>
-			<label for="error-correction-select" class="mb-1 block text-sm font-medium dark:text-white"
-				>Error Correction</label
-			>
-			<select
+		<!-- Error Correction Select -->
+		<div class="space-y-2">
+			<Label htmlFor="error-correction-select">Error Correction</Label>
+			<Select
 				id="error-correction-select"
-				value={options.errorCorrection}
+				bind:value={options.errorCorrection}
 				onchange={handleInput('errorCorrection')}
-				class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
 			>
 				<option value="L">Low (7%)</option>
 				<option value="M">Medium (15%)</option>
 				<option value="Q">Quartile (25%)</option>
 				<option value="H">High (30%)</option>
-			</select>
+			</Select>
 		</div>
 
-		<div>
-			<label for="foreground-color" class="mb-1 block text-sm font-medium dark:text-white"
-				>Foreground Color</label
-			>
-			<input
+		<!-- Foreground Color Input -->
+		<div class="space-y-2">
+			<Label htmlFor="foreground-color">Foreground Color</Label>
+			<Input
 				id="foreground-color"
 				type="color"
-				value={options.foregroundColor}
+				bind:value={options.foregroundColor}
 				oninput={handleInput('foregroundColor')}
-				class="h-10 w-full rounded-md border"
+				class="h-10 w-full cursor-pointer"
 			/>
 		</div>
 
-		<div>
-			<label for="background-color" class="mb-1 block text-sm font-medium dark:text-white"
-				>Background Color</label
-			>
-			<input
+		<!-- Background Color Input -->
+		<div class="space-y-2">
+			<Label htmlFor="background-color">Background Color</Label>
+			<Input
 				id="background-color"
 				type="color"
-				value={options.backgroundColor}
+				bind:value={options.backgroundColor}
 				oninput={handleInput('backgroundColor')}
-				class="h-10 w-full rounded-md border"
+				class="h-10 w-full cursor-pointer"
 			/>
 		</div>
 	</div>

@@ -1,6 +1,12 @@
 <script lang="ts">
-	import QrCode from 'qrcode';
 	import jsPDF from 'jspdf';
+	import QrCode from 'qrcode';
+	import { Input } from '$lib/components/ui';
+	import { Textarea } from '$lib/components/ui';
+	import { Select } from '$lib/components/ui';
+	import { Button } from '$lib/components/ui';
+	import { Label } from '$lib/components/ui';
+	import { Card } from '$lib/components/ui';
 
 	// Types
 	interface QrType {
@@ -233,7 +239,7 @@ END:VCARD`;
 	function handleTypeChange(event: Event): void {
 		const target = event.target as HTMLSelectElement;
 		selectedType = target.value;
-		
+
 		// Reset form data
 		formData = {
 			url: { url: '' },
@@ -253,7 +259,7 @@ END:VCARD`;
 			phone: { phone: '' },
 			location: { latitude: '', longitude: '' }
 		};
-		
+
 		error = '';
 		hasUserInteracted = false;
 	}
@@ -267,368 +273,381 @@ END:VCARD`;
 	/>
 </svelte:head>
 
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-	<div class="container mx-auto px-4 py-8">
-		<div class="mx-auto max-w-6xl">
-			<!-- Header -->
-			<div class="mb-8 text-center">
-				<h1 class="mb-4 text-4xl font-bold text-gray-900 dark:text-white">QR Code Generator</h1>
-				<p class="text-lg text-gray-600 dark:text-gray-300">
-					Create QR codes for websites, text, phone numbers, WiFi networks, and more
-				</p>
-			</div>
+<div class="min-h-screen dark:bg-gray-900">
+	<div class="mx-auto">
+		<!-- Header -->
+		<div class="mb-8 text-center">
+			<h1 class="mb-4 text-4xl font-bold text-gray-900 dark:text-white">QR Code Generator</h1>
+			<p class="text-lg text-gray-600 dark:text-gray-300">
+				Create QR codes for websites, text, phone numbers, WiFi networks, and more
+			</p>
+		</div>
 
-			<div class="grid gap-8 lg:grid-cols-2">
-				<!-- Left Column: Form Controls -->
-				<div class="space-y-6">
-					<!-- QR Code Type Selection -->
-					<div class="rounded-lg border bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-gray-800">
-						<label for="qr-type-select" class="mb-2 block text-sm font-medium text-gray-700 dark:text-white">
-							QR Code Type
-						</label>
-						<select
-							id="qr-type-select"
-							class="w-full rounded-md border p-3 dark:bg-gray-700 dark:text-white"
-							bind:value={selectedType}
-							onchange={handleTypeChange}
-							aria-label="Select QR code type"
-						>
-							{#each qrTypes as type}
-								<option value={type.value}>{type.label}</option>
-							{/each}
-						</select>
-					</div>
+		<div class="grid gap-8 lg:grid-cols-2">
+			<!-- Left Column: Form Controls -->
+			<div class="space-y-6">
+				<!-- QR Code Type Selection -->
+				<div class="rounded-lg border bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-gray-800">
+					<label
+						for="qr-type-select"
+						class="mb-2 block text-sm font-medium text-gray-700 dark:text-white"
+					>
+						QR Code Type
+					</label>
+					<select
+						id="qr-type-select"
+						class="w-full rounded-md border p-3 dark:bg-gray-700 dark:text-white"
+						bind:value={selectedType}
+						onchange={handleTypeChange}
+						aria-label="Select QR code type"
+					>
+						{#each qrTypes as type}
+							<option value={type.value}>{type.label}</option>
+						{/each}
+					</select>
+				</div>
 
-					<!-- Enter Details -->
-					<div class="rounded-lg border bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-gray-800">
-						<h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Enter Details</h2>
+				<!-- Enter Details -->
+				<div class="rounded-lg border bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-gray-800">
+					<h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Enter Details</h2>
 
-						{#if selectedType === 'url'}
+					{#if selectedType === 'url'}
+						<input
+							type="url"
+							class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+							bind:value={formData.url.url}
+							oninput={markUserInteraction}
+							placeholder="https://example.com or example.com"
+							aria-label="Website URL"
+						/>
+					{:else if selectedType === 'contact'}
+						<div class="space-y-3">
 							<input
-								type="url"
+								type="text"
 								class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-								bind:value={formData.url.url}
+								bind:value={formData.contact.firstName}
 								oninput={markUserInteraction}
-								placeholder="https://example.com or example.com"
-								aria-label="Website URL"
+								placeholder="First Name"
+								aria-label="First Name"
 							/>
-
-						{:else if selectedType === 'contact'}
-							<div class="space-y-3">
-								<input
-									type="text"
-									class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-									bind:value={formData.contact.firstName}
-									oninput={markUserInteraction}
-									placeholder="First Name"
-									aria-label="First Name"
-								/>
-								<input
-									type="text"
-									class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-									bind:value={formData.contact.lastName}
-									oninput={markUserInteraction}
-									placeholder="Last Name"
-									aria-label="Last Name"
-								/>
-								<input
-									type="text"
-									class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-									bind:value={formData.contact.organization}
-									oninput={markUserInteraction}
-									placeholder="Organization"
-									aria-label="Organization"
-								/>
-								<input
-									type="tel"
-									class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-									bind:value={formData.contact.phone}
-									oninput={markUserInteraction}
-									placeholder="Phone"
-									aria-label="Phone"
-								/>
-								<input
-									type="email"
-									class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-									bind:value={formData.contact.email}
-									oninput={markUserInteraction}
-									placeholder="Email"
-									aria-label="Email"
-								/>
-								<input
-									type="url"
-									class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-									bind:value={formData.contact.website}
-									oninput={markUserInteraction}
-									placeholder="Website"
-									aria-label="Website"
-								/>
-								<textarea
-									class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-									bind:value={formData.contact.address}
-									oninput={markUserInteraction}
-									placeholder="Address"
-									rows="2"
-									aria-label="Address"
-								></textarea>
-							</div>
-
-						{:else if selectedType === 'text'}
-							<textarea
+							<input
+								type="text"
 								class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-								bind:value={formData.text.text}
+								bind:value={formData.contact.lastName}
 								oninput={markUserInteraction}
-								placeholder="Enter your text here..."
-								rows="4"
-								aria-label="Text content"
-							></textarea>
-
-						{:else if selectedType === 'sms'}
-							<div class="space-y-3">
-								<input
-									type="tel"
-									class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-									bind:value={formData.sms.phone}
-									oninput={markUserInteraction}
-									placeholder="Phone Number"
-									aria-label="Phone Number"
-								/>
-								<textarea
-									class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-									bind:value={formData.sms.message}
-									oninput={markUserInteraction}
-									placeholder="Message (Optional)"
-									rows="2"
-									aria-label="SMS Message"
-								></textarea>
-							</div>
-
-						{:else if selectedType === 'email'}
-							<div class="space-y-3">
-								<input
-									type="email"
-									class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-									bind:value={formData.email.email}
-									oninput={markUserInteraction}
-									placeholder="Email Address"
-									aria-label="Email Address"
-								/>
-								<input
-									type="text"
-									class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-									bind:value={formData.email.subject}
-									oninput={markUserInteraction}
-									placeholder="Subject (Optional)"
-									aria-label="Email Subject"
-								/>
-								<textarea
-									class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-									bind:value={formData.email.body}
-									oninput={markUserInteraction}
-									placeholder="Body (Optional)"
-									rows="3"
-									aria-label="Email Body"
-								></textarea>
-							</div>
-
-						{:else if selectedType === 'wifi'}
-							<div class="space-y-3">
-								<input
-									type="text"
-									class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-									bind:value={formData.wifi.ssid}
-									oninput={markUserInteraction}
-									placeholder="Network Name (SSID)"
-									aria-label="WiFi Network Name"
-								/>
-								<input
-									type="password"
-									class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-									bind:value={formData.wifi.password}
-									oninput={markUserInteraction}
-									placeholder="Password"
-									aria-label="WiFi Password"
-								/>
-								<select
-									class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-									bind:value={formData.wifi.security}
-									onchange={markUserInteraction}
-									aria-label="Security Type"
-								>
-									<option value="WPA">WPA/WPA2</option>
-									<option value="WEP">WEP</option>
-									<option value="nopass">None</option>
-								</select>
-								<label class="flex items-center space-x-2">
-									<input
-										type="checkbox"
-										bind:checked={formData.wifi.hidden}
-										onchange={markUserInteraction}
-										class="rounded border"
-									/>
-									<span class="text-sm dark:text-white">Hidden Network</span>
-								</label>
-							</div>
-
-						{:else if selectedType === 'phone'}
+								placeholder="Last Name"
+								aria-label="Last Name"
+							/>
+							<input
+								type="text"
+								class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+								bind:value={formData.contact.organization}
+								oninput={markUserInteraction}
+								placeholder="Organization"
+								aria-label="Organization"
+							/>
 							<input
 								type="tel"
 								class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-								bind:value={formData.phone.phone}
+								bind:value={formData.contact.phone}
+								oninput={markUserInteraction}
+								placeholder="Phone"
+								aria-label="Phone"
+							/>
+							<input
+								type="email"
+								class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+								bind:value={formData.contact.email}
+								oninput={markUserInteraction}
+								placeholder="Email"
+								aria-label="Email"
+							/>
+							<input
+								type="url"
+								class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+								bind:value={formData.contact.website}
+								oninput={markUserInteraction}
+								placeholder="Website"
+								aria-label="Website"
+							/>
+							<textarea
+								class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+								bind:value={formData.contact.address}
+								oninput={markUserInteraction}
+								placeholder="Address"
+								rows="2"
+								aria-label="Address"
+							></textarea>
+						</div>
+					{:else if selectedType === 'text'}
+						<textarea
+							class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+							bind:value={formData.text.text}
+							oninput={markUserInteraction}
+							placeholder="Enter your text here..."
+							rows="4"
+							aria-label="Text content"
+						></textarea>
+					{:else if selectedType === 'sms'}
+						<div class="space-y-3">
+							<input
+								type="tel"
+								class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+								bind:value={formData.sms.phone}
 								oninput={markUserInteraction}
 								placeholder="Phone Number"
 								aria-label="Phone Number"
 							/>
-
-						{:else if selectedType === 'location'}
-							<div class="space-y-3">
-								<input
-									type="number"
-									class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-									bind:value={formData.location.latitude}
-									oninput={markUserInteraction}
-									placeholder="Latitude"
-									step="any"
-									aria-label="Latitude"
-								/>
-								<input
-									type="number"
-									class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-									bind:value={formData.location.longitude}
-									oninput={markUserInteraction}
-									placeholder="Longitude"
-									step="any"
-									aria-label="Longitude"
-								/>
-							</div>
-						{/if}
-
-						{#if error}
-							<div class="text-red-500 text-sm mt-2" role="alert" aria-live="polite">
-								{error}
-							</div>
-						{/if}
-					</div>
-
-					<!-- Customize QR Code -->
-					<div class="rounded-lg border bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-gray-800">
-						<h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Customize QR Code</h3>
-
-						<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-							<div>
-								<label for="size-range" class="mb-1 block text-sm font-medium dark:text-white">Size</label>
-								<input
-									id="size-range"
-									type="range"
-									class="w-full"
-									bind:value={qrSize}
-									oninput={markUserInteraction}
-									min="200"
-									max="800"
-									step="50"
-									aria-label="QR Code Size"
-								/>
-								<div class="text-xs text-gray-500">{qrSize}px</div>
-							</div>
-
-							<div>
-								<label for="error-correction-select" class="mb-1 block text-sm font-medium dark:text-white">Error Correction</label>
-								<select
-									id="error-correction-select"
-									class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-									bind:value={errorCorrection}
-									onchange={markUserInteraction}
-									aria-label="Error Correction Level"
-								>
-									{#each errorLevels as level}
-										<option value={level.value}>{level.label}</option>
-									{/each}
-								</select>
-							</div>
-
-							<div>
-								<label for="foreground-color" class="mb-1 block text-sm font-medium dark:text-white">Foreground Color</label>
-								<input
-									id="foreground-color"
-									type="color"
-									class="h-10 w-full rounded-md border"
-									bind:value={foregroundColor}
-									oninput={markUserInteraction}
-									aria-label="Foreground Color"
-								/>
-							</div>
-
-							<div>
-								<label for="background-color" class="mb-1 block text-sm font-medium dark:text-white">Background Color</label>
-								<input
-									id="background-color"
-									type="color"
-									class="h-10 w-full rounded-md border"
-									bind:value={backgroundColor}
-									oninput={markUserInteraction}
-									aria-label="Background Color"
-								/>
-							</div>
+							<textarea
+								class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+								bind:value={formData.sms.message}
+								oninput={markUserInteraction}
+								placeholder="Message (Optional)"
+								rows="2"
+								aria-label="SMS Message"
+							></textarea>
 						</div>
-					</div>
+					{:else if selectedType === 'email'}
+						<div class="space-y-3">
+							<input
+								type="email"
+								class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+								bind:value={formData.email.email}
+								oninput={markUserInteraction}
+								placeholder="Email Address"
+								aria-label="Email Address"
+							/>
+							<input
+								type="text"
+								class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+								bind:value={formData.email.subject}
+								oninput={markUserInteraction}
+								placeholder="Subject (Optional)"
+								aria-label="Email Subject"
+							/>
+							<textarea
+								class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+								bind:value={formData.email.body}
+								oninput={markUserInteraction}
+								placeholder="Body (Optional)"
+								rows="3"
+								aria-label="Email Body"
+							></textarea>
+						</div>
+					{:else if selectedType === 'wifi'}
+						<div class="space-y-3">
+							<input
+								type="text"
+								class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+								bind:value={formData.wifi.ssid}
+								oninput={markUserInteraction}
+								placeholder="Network Name (SSID)"
+								aria-label="WiFi Network Name"
+							/>
+							<input
+								type="password"
+								class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+								bind:value={formData.wifi.password}
+								oninput={markUserInteraction}
+								placeholder="Password"
+								aria-label="WiFi Password"
+							/>
+							<select
+								class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+								bind:value={formData.wifi.security}
+								onchange={markUserInteraction}
+								aria-label="Security Type"
+							>
+								<option value="WPA">WPA/WPA2</option>
+								<option value="WEP">WEP</option>
+								<option value="nopass">None</option>
+							</select>
+							<label class="flex items-center space-x-2">
+								<input
+									type="checkbox"
+									bind:checked={formData.wifi.hidden}
+									onchange={markUserInteraction}
+									class="rounded border"
+								/>
+								<span class="text-sm dark:text-white">Hidden Network</span>
+							</label>
+						</div>
+					{:else if selectedType === 'phone'}
+						<input
+							type="tel"
+							class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+							bind:value={formData.phone.phone}
+							oninput={markUserInteraction}
+							placeholder="Phone Number"
+							aria-label="Phone Number"
+						/>
+					{:else if selectedType === 'location'}
+						<div class="space-y-3">
+							<input
+								type="number"
+								class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+								bind:value={formData.location.latitude}
+								oninput={markUserInteraction}
+								placeholder="Latitude"
+								step="any"
+								aria-label="Latitude"
+							/>
+							<input
+								type="number"
+								class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+								bind:value={formData.location.longitude}
+								oninput={markUserInteraction}
+								placeholder="Longitude"
+								step="any"
+								aria-label="Longitude"
+							/>
+						</div>
+					{/if}
+
+					{#if error}
+						<div class="mt-2 text-sm text-red-500" role="alert" aria-live="polite">
+							{error}
+						</div>
+					{/if}
 				</div>
 
-				<!-- Right Column: QR Code Preview -->
-				<div class="space-y-6">
-					<div class="rounded-lg border bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-gray-800">
-						<h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">QR Code Preview</h2>
+				<!-- Customize QR Code -->
+				<div class="rounded-lg border bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-gray-800">
+					<h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+						Customize QR Code
+					</h3>
 
-						<div class="flex flex-col items-center">
-							{#if isGenerating}
-								<div class="text-center">
-									<div class="animate-spin inline-block w-6 h-6 border-2 border-gray-300 border-t-gray-600 rounded-full mb-2"></div>
-									<div>Generating QR code...</div>
-								</div>
-							{:else if qrCodeUrl}
-								<div class="text-center">
-									<img
-										src={qrCodeUrl}
-										alt="Generated QR Code for {qrTypes.find(t => t.value === selectedType)?.label}"
-										class="mx-auto mb-4 rounded-lg"
-									/>
-									<div class="flex space-x-4">
-										<button
-											type="button"
-											class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
-											onclick={downloadQrCode}
-										>
-											Download PNG
-										</button>
-										<button
-											type="button"
-											class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
-											onclick={downloadPDF}
-										>
-											Download PDF
-										</button>
-									</div>
-								</div>
-							{:else}
-								<div class="flex h-64 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
-									<p class="text-gray-500 dark:text-gray-400">
-										{error ? 'Fix errors to generate QR code' : 'Fill in the details to generate QR code'}
-									</p>
-								</div>
-							{/if}
+					<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+						<div>
+							<label for="size-range" class="mb-1 block text-sm font-medium dark:text-white"
+								>Size</label
+							>
+							<input
+								id="size-range"
+								type="range"
+								class="w-full"
+								bind:value={qrSize}
+								oninput={markUserInteraction}
+								min="200"
+								max="800"
+								step="50"
+								aria-label="QR Code Size"
+							/>
+							<div class="text-xs text-gray-500">{qrSize}px</div>
+						</div>
+
+						<div>
+							<label
+								for="error-correction-select"
+								class="mb-1 block text-sm font-medium dark:text-white">Error Correction</label
+							>
+							<select
+								id="error-correction-select"
+								class="w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+								bind:value={errorCorrection}
+								onchange={markUserInteraction}
+								aria-label="Error Correction Level"
+							>
+								{#each errorLevels as level}
+									<option value={level.value}>{level.label}</option>
+								{/each}
+							</select>
+						</div>
+
+						<div>
+							<label for="foreground-color" class="mb-1 block text-sm font-medium dark:text-white"
+								>Foreground Color</label
+							>
+							<input
+								id="foreground-color"
+								type="color"
+								class="h-10 w-full rounded-md border"
+								bind:value={foregroundColor}
+								oninput={markUserInteraction}
+								aria-label="Foreground Color"
+							/>
+						</div>
+
+						<div>
+							<label for="background-color" class="mb-1 block text-sm font-medium dark:text-white"
+								>Background Color</label
+							>
+							<input
+								id="background-color"
+								type="color"
+								class="h-10 w-full rounded-md border"
+								bind:value={backgroundColor}
+								oninput={markUserInteraction}
+								aria-label="Background Color"
+							/>
 						</div>
 					</div>
 				</div>
 			</div>
 
-			<!-- Footer -->
-			<footer class="mt-16 border-t pt-8 text-center text-gray-600 dark:border-gray-600 dark:text-gray-400">
-				<p class="mb-2">
-					All QR codes are generated locally in your browser. No data is sent to our servers.
-				</p>
-				<p class="text-sm">
-					Supports industry-standard formats for maximum compatibility across all devices.
-				</p>
-			</footer>
+			<!-- Right Column: QR Code Preview -->
+			<div class="space-y-6">
+				<div class="rounded-lg border bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-gray-800">
+					<h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">QR Code Preview</h2>
+
+					<div class="flex flex-col items-center">
+						{#if isGenerating}
+							<div class="text-center">
+								<div
+									class="mb-2 inline-block h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"
+								></div>
+								<div>Generating QR code...</div>
+							</div>
+						{:else if qrCodeUrl}
+							<div class="text-center">
+								<img
+									src={qrCodeUrl}
+									alt="Generated QR Code for {qrTypes.find((t) => t.value === selectedType)?.label}"
+									class="mx-auto mb-4 rounded-lg"
+								/>
+								<div class="flex space-x-4">
+									<button
+										type="button"
+										class="rounded bg-blue-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-600"
+										onclick={downloadQrCode}
+									>
+										Download PNG
+									</button>
+									<button
+										type="button"
+										class="rounded bg-green-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-600"
+										onclick={downloadPDF}
+									>
+										Download PDF
+									</button>
+								</div>
+							</div>
+						{:else}
+							<div
+								class="flex h-64 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600"
+							>
+								<p class="text-gray-500 dark:text-gray-400 p-4">
+									{error
+										? 'Fix errors to generate QR code'
+										: 'Fill in the details to generate QR code'}
+								</p>
+							</div>
+						{/if}
+					</div>
+				</div>
+			</div>
 		</div>
+
+		<!-- Footer -->
+		<footer
+			class="mt-16 border-t pt-8 text-center text-gray-600 dark:border-gray-600 dark:text-gray-400"
+		>
+			<p class="mb-2">
+				All QR codes are generated locally in your browser. No data is sent to our servers.
+			</p>
+			<p class="text-sm">
+				Supports industry-standard formats for maximum compatibility across all devices.
+			</p>
+		</footer>
 	</div>
 </div>
