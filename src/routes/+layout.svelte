@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Footer, Header } from '$lib/shared/components';
 	import '../app.css';
 
 	let { children } = $props();
@@ -28,22 +29,29 @@
 	<meta name="twitter:image" content="https://qr.devxhub.com/preview.png" />
 </svelte:head>
 
-<header class="bg-[#1E293B] p-4 text-white">
-	<h1 class="text-xl font-bold">QR Code Generator</h1>
-</header>
+<Header title="QR Code Generator" subtitle="Create & Customize" />
 
-<main class="p-4">
-	{@render children()}
+<main class="flex flex-1 flex-col bg-gradient-to-b from-slate-50 to-white">
+	<div class="mx-auto w-full max-w-7xl px-6 py-8">
+		{@render children()}
+	</div>
 </main>
 
-<footer class="bg-[#0F172A] p-4 text-center text-white">
-	<p>
-		&copy; {new Date().getFullYear()}
-		<a
-			href="https://devxhub.com"
-			target="_blank"
-			rel="noopener noreferrer"
-			class="text-blue-600 hover:underline dark:text-blue-400">Devxhub Pvt. Ltd.</a
-		>. All rights reserved.
-	</p>
-</footer>
+<Footer
+	brandName="QR Generator"
+	description="Create beautiful, customizable QR codes for any purpose."
+	sections={[
+		{
+			title: 'Features',
+			items: ['URL QR Codes', 'Contact Cards', 'WiFi Networks', 'SMS & Email']
+		},
+		{
+			title: 'Export Options',
+			items: ['PNG Format', 'JPEG Format', 'PDF Export', 'Custom Colors']
+		},
+		{
+			title: 'Products',
+			items: ['Password Generator', 'Calculator', 'QR Code Generator']
+		}
+	]}
+/>

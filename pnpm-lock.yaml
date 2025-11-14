@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       html2canvas:
         specifier: ^1.4.1
         version: 1.4.1
@@ -17,6 +20,9 @@ importers:
       qrcode:
         specifier: ^1.5.4
         version: 1.5.4
+      tailwind-merge:
+        specifier: ^3.4.0
+        version: 3.4.0
       tslib:
         specifier: ^2.8.1
         version: 2.8.1
@@ -75,6 +81,9 @@ importers:
       prettier-plugin-tailwindcss:
         specifier: ^0.6.11
         version: 0.6.11(prettier-plugin-svelte@3.3.3(prettier@3.5.3)(svelte@5.25.6))(prettier@3.5.3)
+      shadcn-svelte:
+        specifier: 1.0.0-next.19
+        version: 1.0.0-next.19
       svelte:
         specifier: ^5.25.6
         version: 5.25.6
@@ -758,6 +767,10 @@ packages:
   color-name@1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
 
+  commander@13.1.0:
+    resolution: {integrity: sha512-/rFeCpNJQbhSZjGVwO9RFV3xPqbnERS8MmIQzCtD/zl6gpJuV/bMLuN92oG3F7d8oDEHHRrujSXNUr8fpjntKw==}
+    engines: {node: '>=18'}
+
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
@@ -1192,6 +1205,9 @@ packages:
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
+  node-fetch-native@1.6.7:
+    resolution: {integrity: sha512-g9yhqoedzIUm0nTnTqAQvueMPVOuIY16bqgAJJC8XOOubYFNwz6IER9qs0Gq2Xd0+CecCKFjtdDTMA4u4xG06Q==}
+
   node-releases@2.0.21:
     resolution: {integrity: sha512-5b0pgg78U3hwXkCM8Z9b2FJdPZlr9Psr9V2gQPESdGHqbntyFJKFW4r5TeWGFzafGY3hzs1JC62VEQMbl1JFkw==}
 
@@ -1421,6 +1437,10 @@ packages:
   set-cookie-parser@2.7.1:
     resolution: {integrity: sha512-IOc8uWeOZgnb3ptbCURJWNjWUPcO3ZnTTdzsurqERrP6nPyv+paC55vJM0LpOlT2ne+Ix+9+CRG1MNLlyZ4GjQ==}
 
+  shadcn-svelte@1.0.0-next.19:
+    resolution: {integrity: sha512-OHDhZd5vbhCp0Z8wGBbjYOANuGNJ24tJBzD9yqc+BDvPAFRtli2WbI1fb5spo/Jr06jI4iLIEKL8/hyus0LkYg==}
+    hasBin: true
+
   shebang-command@2.0.0:
     resolution: {integrity: sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA==}
     engines: {node: '>=8'}
@@ -1481,6 +1501,9 @@ packages:
   svg-pathdata@6.0.3:
     resolution: {integrity: sha512-qsjeeq5YjBZ5eMdFuUa4ZosMLxgr5RZ+F+Y1OrDhuOCEInRMA3x74XdBtggJcj9kOeInz0WE+LgCPDkZFlBYJw==}
     engines: {node: '>=12.0.0'}
+
+  tailwind-merge@3.4.0:
+    resolution: {integrity: sha512-uSaO4gnW+b3Y2aWoWfFpX62vn2sR3skfhbjsEnaBI81WD1wBLlHZe5sWf0AqjksNdYTbGBEd0UasQMT3SNV15g==}
 
   tailwindcss@4.1.1:
     resolution: {integrity: sha512-QNbdmeS979Efzim2g/bEvfuh+fTcIdp1y7gA+sb6OYSW74rt7Cr7M78AKdf6HqWT3d5AiTb7SwTT3sLQxr4/qw==}
@@ -2190,6 +2213,8 @@ snapshots:
 
   color-name@1.1.4: {}
 
+  commander@13.1.0: {}
+
   concat-map@0.0.1: {}
 
   cookie@0.6.0: {}
@@ -2604,6 +2629,8 @@ snapshots:
 
   natural-compare@1.4.0: {}
 
+  node-fetch-native@1.6.7: {}
+
   node-releases@2.0.21: {}
 
   normalize-range@0.1.2: {}
@@ -2768,6 +2795,12 @@ snapshots:
 
   set-cookie-parser@2.7.1: {}
 
+  shadcn-svelte@1.0.0-next.19:
+    dependencies:
+      commander: 13.1.0
+      node-fetch-native: 1.6.7
+      postcss: 8.5.6
+
   shebang-command@2.0.0:
     dependencies:
       shebang-regex: 3.0.0
@@ -2843,6 +2876,8 @@ snapshots:
 
   svg-pathdata@6.0.3:
     optional: true
+
+  tailwind-merge@3.4.0: {}
 
   tailwindcss@4.1.1: {}
 
