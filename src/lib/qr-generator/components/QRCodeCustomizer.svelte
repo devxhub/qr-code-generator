@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Input, Label, Select } from '$lib/shared/components/ui';
+	import { Label, Select } from '$lib/shared/components/ui';
 	import type { QRCodeOptions } from '../types';
 
 	interface Props {
@@ -8,6 +8,10 @@
 	}
 
 	let { options, onUpdate }: Props = $props();
+
+	// Ensure color values are always valid hex colors
+	const foregroundColor = $derived(options.foregroundColor || '#000000');
+	const backgroundColor = $derived(options.backgroundColor || '#ffffff');
 
 	function updateOption<K extends keyof QRCodeOptions>(key: K, value: QRCodeOptions[K]): void {
 		onUpdate({
@@ -54,7 +58,7 @@
 			<Label htmlFor="error-correction-select">Error Correction</Label>
 			<Select
 				id="error-correction-select"
-				bind:value={options.errorCorrection}
+				value={options.errorCorrection}
 				onchange={handleInput('errorCorrection')}
 			>
 				<option value="L">Low (7%)</option>
@@ -67,24 +71,24 @@
 		<!-- Foreground Color Input -->
 		<div class="space-y-2">
 			<Label htmlFor="foreground-color">Foreground Color</Label>
-			<Input
+			<input
 				id="foreground-color"
 				type="color"
-				bind:value={options.foregroundColor}
+				value={foregroundColor}
 				oninput={handleInput('foregroundColor')}
-				class="h-10 w-full cursor-pointer"
+				class="h-10 w-full cursor-pointer rounded-md border border-slate-200 dark:border-slate-800"
 			/>
 		</div>
 
 		<!-- Background Color Input -->
 		<div class="space-y-2">
 			<Label htmlFor="background-color">Background Color</Label>
-			<Input
+			<input
 				id="background-color"
 				type="color"
-				bind:value={options.backgroundColor}
+				value={backgroundColor}
 				oninput={handleInput('backgroundColor')}
-				class="h-10 w-full cursor-pointer"
+				class="h-10 w-full cursor-pointer rounded-md border border-slate-200 dark:border-slate-800"
 			/>
 		</div>
 	</div>

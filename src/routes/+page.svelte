@@ -2,159 +2,42 @@
 	import { QRCodeCustomizer, QRCodeForm, QRCodePreview } from '$lib/qr-generator/components';
 	import type { QRCodeOptions } from '$lib/qr-generator/types';
 	import {
+		createEmptyFormData,
 		formDataToQRCodeData,
 		generateQRCodeImage,
 		generateQRContent,
+		getFormDataForComponent,
+		QR_TYPES,
+		updateFormDataByType,
 		type FormData
 	} from '$lib/qr-generator/utils';
 
-	interface QrType {
-		value: string;
-		label: string;
-	}
-
-	interface ErrorLevel {
-		value: 'L' | 'M' | 'Q' | 'H';
-		label: string;
-	}
-
-	const qrTypes: QrType[] = [
-		{ value: 'url', label: 'Website URL' },
-		{ value: 'contact', label: 'Contact Card' },
-		{ value: 'text', label: 'Plain Text' },
-		{ value: 'sms', label: 'SMS Message' },
-		{ value: 'email', label: 'Email' },
-		{ value: 'wifi', label: 'WiFi Network' },
-		{ value: 'phone', label: 'Phone Number' },
-		{ value: 'location', label: 'GPS Location' }
-	];
-
-	const errorLevels: ErrorLevel[] = [
-		{ value: 'L', label: 'Low (7%)' },
-		{ value: 'M', label: 'Medium (15%)' },
-		{ value: 'Q', label: 'Quartile (25%)' },
-		{ value: 'H', label: 'High (30%)' }
-	];
-
-	// State using Svelte 5 runes
 	let selectedType = $state('url');
 	let qrCodeUrl = $state('');
 	let isGenerating = $state(false);
 	let error = $state('');
 	let hasUserInteracted = $state(false);
 
-	// Customization options
 	let qrSize = $state(400);
 	let foregroundColor = $state('#000000');
 	let backgroundColor = $state('#ffffff');
 	let errorCorrection = $state<'L' | 'M' | 'Q' | 'H'>('M');
 
-	// Form data for different types - all empty by default
-	let formData = $state<FormData>({
-		url: { url: '' },
-		contact: {
-			firstName: '',
-			lastName: '',
-			organization: '',
-			phone: '',
-			email: '',
-			website: '',
-			address: ''
-		},
-		text: { text: '' },
-		sms: { phone: '', message: '' },
-		email: { email: '', subject: '', body: '' },
-		wifi: { ssid: '', password: '', security: 'WPA', hidden: false },
-		phone: { phone: '' },
-		location: { latitude: '', longitude: '' }
-	});
+	let formData = $state<FormData>(createEmptyFormData());
 
-	// Convert formData to component format
-	function getQRCodeData() {
-		return formDataToQRCodeData(selectedType, formData);
-	}
-
-	// Get current form data as flat structure for QRCodeForm
-	function getFormDataForComponent() {
-		const qrData = getQRCodeData();
-		// For contact type, we need to pass the flat structure
-		if (selectedType === 'contact') {
-			return {
-				type: 'contact' as const,
-				data: {
-					firstName: formData.contact.firstName,
-					lastName: formData.contact.lastName,
-					organization: formData.contact.organization,
-					phone: formData.contact.phone,
-					email: formData.contact.email,
-					website: formData.contact.website,
-					address: formData.contact.address
-				}
-			};
-		}
-		return qrData;
-	}
-
-	// Track user interaction
 	function markUserInteraction() {
 		hasUserInteracted = true;
 	}
 
-	// Handle form data change from QRCodeForm
 	function handleFormDataChange(newData: Record<string, string>) {
 		markUserInteraction();
-
-		// Update formData based on selected type
-		switch (selectedType) {
-			case 'url':
-				formData.url.url = newData.url || '';
-				break;
-			case 'contact':
-				formData.contact = {
-					firstName: newData.firstName || '',
-					lastName: newData.lastName || '',
-					organization: newData.organization || '',
-					phone: newData.phone || '',
-					email: newData.email || '',
-					website: newData.website || '',
-					address: newData.address || ''
-				};
-				break;
-			case 'text':
-				formData.text.text = newData.text || '';
-				break;
-			case 'sms':
-				formData.sms.phone = newData.phone || '';
-				formData.sms.message = newData.message || '';
-				break;
-			case 'email':
-				formData.email.email = newData.email || '';
-				formData.email.subject = newData.subject || '';
-				formData.email.body = newData.message || '';
-				break;
-			case 'wifi':
-				formData.wifi.ssid = newData.ssid || '';
-				formData.wifi.password = newData.password || '';
-				formData.wifi.security = newData.encryption || 'WPA';
-				formData.wifi.hidden = newData.hidden === 'true';
-				break;
-			case 'phone':
-				formData.phone.phone = newData.phone || '';
-				break;
-			case 'location':
-				formData.location.latitude = newData.latitude || '';
-				formData.location.longitude = newData.longitude || '';
-				break;
-		}
+		formData = updateFormDataByType(selectedType, formData, newData);
 	}
 
-	// Generate QR code
 	async function generateQrCode(): Promise<void> {
 		if (!hasUserInteracted) return;
 
-		const qrData = getQRCodeData();
-
-		// Generate content string to check if we have data (matching original logic)
+		const qrData = formDataToQRCodeData(selectedType, formData);
 		const data = generateQRContent(qrData);
 
 		if (!data.trim()) {
@@ -185,24 +68,12 @@
 		}
 	}
 
-	// Svelte 5 reactive effect to replace $: statement
 	$effect(() => {
-		// Access all reactive dependencies to ensure this runs when they change
-		const currentType = selectedType;
-		const currentFormData = formData;
-		const currentSize = qrSize;
-		const currentForeground = foregroundColor;
-		const currentBackground = backgroundColor;
-		const currentErrorCorrection = errorCorrection;
-		const currentHasUserInteracted = hasUserInteracted;
-
-		// Auto-generate QR code when values change (only after user interaction)
 		if (hasUserInteracted) {
 			generateQrCode();
 		}
 	});
 
-	// Handle customization options change
 	function handleOptionsChange(options: QRCodeOptions) {
 		qrSize = options.size;
 		foregroundColor = options.foregroundColor;
@@ -211,31 +82,10 @@
 		markUserInteraction();
 	}
 
-	// Reset form when type changes
 	function handleTypeChange(event: Event): void {
 		const target = event.target as HTMLSelectElement;
 		selectedType = target.value;
-
-		// Reset form data
-		formData = {
-			url: { url: '' },
-			contact: {
-				firstName: '',
-				lastName: '',
-				organization: '',
-				phone: '',
-				email: '',
-				website: '',
-				address: ''
-			},
-			text: { text: '' },
-			sms: { phone: '', message: '' },
-			email: { email: '', subject: '', body: '' },
-			wifi: { ssid: '', password: '', security: 'WPA', hidden: false },
-			phone: { phone: '' },
-			location: { latitude: '', longitude: '' }
-		};
-
+		formData = createEmptyFormData();
 		error = '';
 		hasUserInteracted = false;
 	}
@@ -277,7 +127,7 @@
 						onchange={handleTypeChange}
 						aria-label="Select QR code type"
 					>
-						{#each qrTypes as type}
+						{#each QR_TYPES as type}
 							<option value={type.value}>{type.label}</option>
 						{/each}
 					</select>
@@ -289,7 +139,7 @@
 
 					<QRCodeForm
 						{selectedType}
-						qrData={getFormDataForComponent()}
+						qrData={getFormDataForComponent(selectedType, formData, formDataToQRCodeData)}
 						onDataChange={handleFormDataChange}
 					/>
 
@@ -319,7 +169,7 @@
 					{isGenerating}
 					{error}
 					{selectedType}
-					typeLabel={qrTypes.find((t) => t.value === selectedType)?.label || ''}
+					typeLabel={QR_TYPES.find((t) => t.value === selectedType)?.label || ''}
 				/>
 			</div>
 		</div>
