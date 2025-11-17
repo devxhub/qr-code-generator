@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Label, Select } from '$lib/shared/components/ui';
+	import { Label, Select, Slider } from '$lib/shared/components/ui';
 	import type { QRCodeOptions } from '../types';
 
 	interface Props {
@@ -9,9 +9,24 @@
 
 	let { options, onUpdate }: Props = $props();
 
+	// Local state for size to enable binding with Slider
+	let size = $state(options.size);
+
 	// Ensure color values are always valid hex colors
 	const foregroundColor = $derived(options.foregroundColor || '#000000');
 	const backgroundColor = $derived(options.backgroundColor || '#ffffff');
+
+	// Sync size when options change externally
+	$effect(() => {
+		size = options.size;
+	});
+
+	// Update options when size changes
+	$effect(() => {
+		if (size !== options.size) {
+			updateOption('size', size);
+		}
+	});
 
 	function updateOption<K extends keyof QRCodeOptions>(key: K, value: QRCodeOptions[K]): void {
 		onUpdate({
@@ -38,19 +53,9 @@
 		<!-- Size Range Input -->
 		<div class="space-y-2">
 			<Label htmlFor="size-range"
-				>Size: <span class="font-semibold text-slate-900 dark:text-white">{options.size}px</span
-				></Label
+				>Size: <span class="font-semibold text-slate-900 dark:text-white">{size}px</span></Label
 			>
-			<input
-				id="size-range"
-				type="range"
-				min="200"
-				max="800"
-				step="50"
-				value={options.size}
-				oninput={handleInput('size')}
-				class="w-full cursor-pointer accent-blue-600 dark:accent-blue-400"
-			/>
+			<Slider id="size-range" min={200} max={800} step={50} bind:value={size} class="mt-2" />
 		</div>
 
 		<!-- Error Correction Select -->

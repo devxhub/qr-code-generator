@@ -11,6 +11,7 @@
 		updateFormDataByType,
 		type FormData
 	} from '$lib/qr-generator/utils';
+	import { Label } from '$lib/shared/components/ui';
 
 	let selectedType = $state('url');
 	let qrCodeUrl = $state('');
@@ -99,7 +100,7 @@
 	/>
 </svelte:head>
 
-<div class="min-h-screen dark:bg-gray-900">
+<div class="min-h-[calc(100vh-150px)] dark:bg-gray-900">
 	<div class="mx-auto">
 		<!-- Header -->
 		<div class="mb-8 text-center">
@@ -114,12 +115,9 @@
 			<div class="space-y-6">
 				<!-- QR Code Type Selection -->
 				<div class="rounded-lg border bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-gray-800">
-					<label
-						for="qr-type-select"
-						class="mb-2 block text-sm font-medium text-gray-700 dark:text-white"
-					>
+					<Label htmlFor="qr-type-select" class="mb-2 block text-base font-medium dark:text-white">
 						QR Code Type
-					</label>
+					</Label>
 					<select
 						id="qr-type-select"
 						class="w-full rounded-md border p-3 dark:bg-gray-700 dark:text-white"
@@ -135,7 +133,9 @@
 
 				<!-- Enter Details -->
 				<div class="rounded-lg border bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-gray-800">
-					<h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Enter Details</h2>
+					<Label class="mb-4 block text-lg font-semibold text-gray-900 dark:text-white">
+						Enter Details
+					</Label>
 
 					<QRCodeForm
 						{selectedType}

@@ -11,6 +11,7 @@
 		disabled?: boolean;
 		type?: 'button' | 'submit' | 'reset';
 		onclick?: (e: MouseEvent) => void;
+		'aria-label'?: string;
 		children?: any;
 	}
 
@@ -43,15 +44,23 @@
 		disabled = false,
 		type = 'button',
 		onclick,
+		'aria-label': ariaLabel,
 		children
 	}: Props = $props();
+
+	function handleClick(e: MouseEvent) {
+		if (onclick && !disabled) {
+			onclick(e);
+		}
+	}
 </script>
 
 <button
 	{type}
 	{disabled}
-	class={cn(baseStyles, variants[variant], sizes[size], className)}
-	{onclick}
+	class={cn(baseStyles, variants[variant], sizes[size], !disabled && 'cursor-pointer', className)}
+	onclick={handleClick}
+	aria-label={ariaLabel}
 >
 	{@render children?.()}
 </button>
