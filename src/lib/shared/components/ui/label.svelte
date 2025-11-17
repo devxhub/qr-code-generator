@@ -13,7 +13,7 @@
 <label
 	for={htmlFor}
 	class={cn(
-		'text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
+		'text-base leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
 		className
 	)}
 >

@@ -4,3 +4,6 @@ export { default as Select } from './select.svelte';
 export { default as Button } from './button.svelte';
 export { default as Label } from './label.svelte';
 export { default as Card } from './card.svelte';
+export {default as Checkbox} from './checkbox.svelte';
+export {default as Tooltip} from './tooltip.svelte';
+export {default as Slider} from './slider.svelte';
