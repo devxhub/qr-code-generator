@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { cn } from '$lib/shared/utils';
+	import type { Snippet } from 'svelte';
 
 	type Variant = 'default' | 'secondary' | 'destructive' | 'outline' | 'ghost' | 'link';
 	type Size = 'default' | 'sm' | 'lg' | 'icon';
@@ -12,7 +13,7 @@
 		type?: 'button' | 'submit' | 'reset';
 		onclick?: (e: MouseEvent) => void;
 		'aria-label'?: string;
-		children?: any;
+		children?: Snippet;
 	}
 
 	const baseStyles =
@@ -53,6 +54,16 @@
 			onclick(e);
 		}
 	}
+
+	// Ensure button has accessible name
+	// Children provide accessible name, or aria-label must be provided
+	// For icon buttons without children, aria-label is required
+	const hasChildren = !!children;
+	// Only use aria-label if provided, or if it's an icon button without children
+	// If children exist, they provide the accessible name
+	const accessibleLabel = hasChildren
+		? ariaLabel
+		: ariaLabel || (size === 'icon' ? 'Button' : undefined);
 </script>
 
 <button
@@ -60,7 +71,7 @@
 	{disabled}
 	class={cn(baseStyles, variants[variant], sizes[size], !disabled && 'cursor-pointer', className)}
 	onclick={handleClick}
-	aria-label={ariaLabel}
+	{...accessibleLabel ? { 'aria-label': accessibleLabel } : {}}
 >
 	{@render children?.()}
 </button>

@@ -5,10 +5,9 @@
 		"baseColor": "slate"
 	},
 	"aliases": {
-		"components": "$lib/components",
-		"utils": "$lib/utils",
-		"ui": "$lib/components/ui",
-		"hooks": "$lib/hooks",
+		"components": "$lib/shared/components",
+		"utils": "$lib/shared/utils",
+		"ui": "$lib/shared/components/ui",
 		"lib": "$lib"
 	},
 	"typescript": true,

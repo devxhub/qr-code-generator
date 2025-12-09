@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { cn } from '$lib/shared/utils';
+	import type { Snippet } from 'svelte';
 
 	interface Props {
 		class?: string;
 		htmlFor?: string;
-		children?: any;
+		children?: Snippet;
 	}
 
 	let { class: className, htmlFor = '', children }: Props = $props();

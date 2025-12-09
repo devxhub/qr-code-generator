@@ -3,17 +3,50 @@
 
 /* Ensure the app takes the full height of the viewport */
 html,
-body,
-#app {
+body {
 	height: 100%;
+	margin: 0;
+	padding: 0;
 }
 
 body {
 	display: flex;
 	flex-direction: column;
-	margin: 0;
+	/* Optimize font rendering - but balance with performance */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	/* Use optimizeSpeed for better performance, can be overridden per element */
+	text-rendering: optimizeSpeed;
+	/* Reduce layout shifts */
+	overflow-x: hidden;
 }
 
 main {
 	flex: 1;
+	/* Optimize rendering */
+	contain: layout style paint;
+}
+
+/* Screen reader only class for skip links */
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border-width: 0;
+}
+
+.sr-only:focus {
+	position: static;
+	width: auto;
+	height: auto;
+	padding: inherit;
+	margin: inherit;
+	overflow: visible;
+	clip: auto;
+	white-space: normal;
 }
