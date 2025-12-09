@@ -11,6 +11,7 @@
 		updateFormDataByType,
 		type FormData
 	} from '$lib/qr-generator/utils';
+	import CTA from '$lib/shared/components/CTA.svelte';
 	import { Label } from '$lib/shared/components/ui';
 
 	let selectedType = $state('url');
@@ -136,13 +137,11 @@
 					<Label class="mb-4 block text-lg font-semibold text-gray-900 dark:text-white">
 						Enter Details
 					</Label>
-
 					<QRCodeForm
 						{selectedType}
 						qrData={getFormDataForComponent(selectedType, formData, formDataToQRCodeData)}
 						onDataChange={handleFormDataChange}
 					/>
-
 					{#if error}
 						<div class="mt-2 text-sm text-red-500" role="alert" aria-live="polite">
 							{error}
@@ -174,9 +173,12 @@
 			</div>
 		</div>
 
-		<!-- Footer -->
-		<footer
-			class="mt-16 border-t pt-8 text-center text-gray-600 dark:border-gray-600 dark:text-gray-400"
+		<div class="mt-10">
+			<CTA />
+		</div>
+
+		<div
+			class="mt-10 border-t pt-8 text-center text-gray-600 dark:border-gray-600 dark:text-gray-400"
 		>
 			<p class="mb-2">
 				All QR codes are generated locally in your browser. No data is sent to our servers.
@@ -184,6 +186,6 @@
 			<p class="text-sm">
 				Supports industry-standard formats for maximum compatibility across all devices.
 			</p>
-		</footer>
+		</div>
 	</div>
 </div>

@@ -15,6 +15,8 @@
 		onfocus?: (e: Event) => void;
 	}
 
+	import type { Snippet } from 'svelte';
+
 	let {
 		class: className,
 		value = $bindable(),
@@ -28,7 +30,7 @@
 		onchange,
 		onfocus,
 		children
-	}: Props & { children?: any } = $props();
+	}: Props & { children?: Snippet } = $props();
 </script>
 
 <select

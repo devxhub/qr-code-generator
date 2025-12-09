@@ -24,7 +24,7 @@ export default ts.config(
 	},
 	{
 		files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
-		ignores: ['eslint.config.js', 'svelte.config.js'],
+		ignores: ['eslint.config.js', 'svelte.config.js', '**/*.css'],
 		languageOptions: {
 			parserOptions: {
 				projectService: true,
@@ -32,6 +32,15 @@ export default ts.config(
 				parser: ts.parser,
 				svelteConfig
 			}
+		},
+		rules: {
+			'svelte/no-navigation-without-resolve': 'off'
+		}
+	},
+	{
+		files: ['**/*.css'],
+		rules: {
+			'@typescript-eslint/no-unused-vars': 'off'
 		}
 	}
 );

@@ -1,3 +1,4 @@
+// @ts-check
 import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
@@ -9,7 +10,11 @@ const config = {
 
 	kit: {
 		// See https://svelte.dev/docs/kit/adapters for more information about adapters.
-		adapter: adapter()
+		adapter: adapter(),
+		// Optimize preloading strategy to reduce critical request chains
+		prerender: {
+			entries: ['*']
+		}
 	},
 
 	compilerOptions: {

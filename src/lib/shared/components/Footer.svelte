@@ -1,9 +1,4 @@
 <script lang="ts">
-	interface FooterLink {
-		label: string;
-		href: string;
-	}
-
 	interface FooterSection {
 		title: string;
 		items: string[];
@@ -102,7 +97,13 @@
 			<!-- Brand Section -->
 			<div class="mb-8">
 				<div class="mb-4 flex items-center gap-3">
-					<img src={logoSrc} alt="Logo" class="h-10 w-10 object-contain" />
+					<img
+						src={logoSrc}
+						alt=""
+						class="h-10 w-10 object-contain"
+						loading="lazy"
+						aria-hidden="true"
+					/>
 					<span class="text-lg font-semibold text-white">{brandName}</span>
 				</div>
 				<p class="text-sm leading-relaxed text-slate-400">
@@ -124,6 +125,7 @@
 										<button
 											type="button"
 											class="text-sm text-slate-400 transition-colors duration-200 hover:text-slate-200"
+											aria-label={`View ${item}`}
 										>
 											{item}
 										</button>
@@ -152,7 +154,13 @@
 					<div>
 						<!-- Map Icon -->
 						<div class="mb-4">
-							<img src={addr.mapIcon} alt={addr.country} class="h-12 w-12 object-contain" />
+							<img
+								src={addr.mapIcon}
+								alt=""
+								class="h-12 w-12 object-contain"
+								loading="lazy"
+								aria-hidden="true"
+							/>
 						</div>
 
 						<!-- Country Name -->
@@ -160,14 +168,32 @@
 
 						<!-- Address with Icon -->
 						<div class="mb-3 flex gap-3">
-							<img src="/address.svg" alt="Address" class="h-4 w-4 flex-shrink-0" />
-							<p class="text-sm text-slate-400">{addr.address}</p>
+							<img
+								src="/address.svg"
+								alt=""
+								class="h-4 w-4 shrink-0"
+								loading="lazy"
+								aria-hidden="true"
+							/>
+							<address class="text-sm text-slate-400 not-italic">{addr.address}</address>
 						</div>
 
 						<!-- Phone with Icon -->
 						<div class="flex gap-3">
-							<img src="/call.svg" alt="Phone" class="h-4 w-4 flex-shrink-0" />
-							<p class="text-sm text-slate-400">{addr.phone}</p>
+							<img
+								src="/call.svg"
+								alt=""
+								class="h-4 w-4 shrink-0"
+								loading="lazy"
+								aria-hidden="true"
+							/>
+							<a
+								href={`tel:${addr.phone.replace(/\s/g, '')}`}
+								class="text-sm text-slate-400 hover:text-slate-200"
+								aria-label={`Phone number for ${addr.country}: ${addr.phone}`}
+							>
+								{addr.phone}
+							</a>
 						</div>
 					</div>
 				{/each}
@@ -185,7 +211,7 @@
 				<a
 					href={companyUrl}
 					target="_blank"
-					rel="noopener noreferrer"
+					rel="external noopener noreferrer"
 					class="font-medium text-blue-400 transition-colors duration-200 hover:text-blue-300"
 				>
 					{companyName}
@@ -199,14 +225,16 @@
 					<a
 						href={social.href}
 						target="_blank"
-						rel="noopener noreferrer"
-						title={social.name}
+						rel="external noopener noreferrer"
+						aria-label={`Visit our ${social.name} page`}
 						class="flex h-10 w-10 items-center justify-center rounded-full"
 					>
 						<img
 							src={social.icon}
-							alt={social.name}
+							alt=""
 							class="h-9 w-9 object-contain transition-transform duration-200 hover:scale-110"
+							loading="lazy"
+							aria-hidden="true"
 						/>
 					</a>
 				{/each}
