@@ -16,6 +16,7 @@
 
 	let selectedType = $state('url');
 	let qrCodeUrl = $state('');
+	let qrContent = $state('');
 	let isGenerating = $state(false);
 	let error = $state('');
 	let hasUserInteracted = $state(false);
@@ -44,6 +45,7 @@
 
 		if (!data.trim()) {
 			qrCodeUrl = '';
+			qrContent = '';
 			error = '';
 			return;
 		}
@@ -61,9 +63,11 @@
 
 			const url = await generateQRCodeImage(qrData, options);
 			qrCodeUrl = url;
+			qrContent = data;
 		} catch (err) {
 			error = 'Failed to generate QR code. Please check your input.';
 			qrCodeUrl = '';
+			qrContent = '';
 			console.error('QR Code generation error:', err);
 		} finally {
 			isGenerating = false;
@@ -168,6 +172,13 @@
 					{isGenerating}
 					{error}
 					{selectedType}
+					{qrContent}
+					qrOptions={{
+						size: qrSize,
+						foregroundColor,
+						backgroundColor,
+						errorCorrection
+					}}
 					typeLabel={QR_TYPES.find((t) => t.value === selectedType)?.label || ''}
 				/>
 			</div>

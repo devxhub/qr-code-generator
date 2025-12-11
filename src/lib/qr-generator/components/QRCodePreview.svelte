@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/shared/components/ui';
-	import { downloadQRCode, downloadQRCodeAsPDF } from '../utils/downloads';
+	import { downloadQRCode, downloadQRCodeAsPDF, downloadQRCodeAsSVG } from '../utils/downloads';
 
 	interface Props {
 		qrCodeUrl: string;
@@ -8,9 +8,17 @@
 		error: string;
 		selectedType: string;
 		typeLabel: string;
+		qrContent?: string;
+		qrOptions?: {
+			size: number;
+			foregroundColor: string;
+			backgroundColor: string;
+			errorCorrection: 'L' | 'M' | 'Q' | 'H';
+		};
 	}
 
-	let { qrCodeUrl, isGenerating, error, selectedType, typeLabel }: Props = $props();
+	let { qrCodeUrl, isGenerating, error, selectedType, typeLabel, qrContent, qrOptions }: Props =
+		$props();
 
 	function handleDownloadPNG() {
 		downloadQRCode(qrCodeUrl, selectedType);
@@ -18,6 +26,12 @@
 
 	function handleDownloadPDF() {
 		downloadQRCodeAsPDF(qrCodeUrl);
+	}
+
+	async function handleDownloadSVG() {
+		if (qrContent && qrOptions) {
+			await downloadQRCodeAsSVG(qrContent, selectedType, qrOptions);
+		}
 	}
 </script>
 
@@ -39,13 +53,20 @@
 					alt="Generated QR Code for {typeLabel}"
 					class="mx-auto mb-4 rounded-lg"
 				/>
-				<div class="flex justify-center space-x-4">
+				<div class="flex justify-center space-x-2">
 					<Button
 						type="button"
 						class="rounded bg-blue-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-600"
 						onclick={handleDownloadPNG}
 					>
 						Download PNG
+					</Button>
+					<Button
+						type="button"
+						class="rounded bg-purple-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-600"
+						onclick={handleDownloadSVG}
+					>
+						Download SVG
 					</Button>
 					<Button
 						type="button"
