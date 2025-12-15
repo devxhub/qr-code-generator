@@ -105,7 +105,7 @@
 	/>
 </svelte:head>
 
-<div class="min-h-[calc(100vh-150px)] dark:bg-gray-900">
+<div class="min-h-[calc(100vh-150px)]">
 	<div class="mx-auto">
 		<!-- Header -->
 		<div class="mb-8 text-center">
@@ -119,7 +119,7 @@
 			<!-- Left Column: Form Controls -->
 			<div class="space-y-6">
 				<!-- QR Code Type Selection -->
-				<div class="rounded-lg border bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-gray-800">
+				<div class="rounded-lg border p-6 shadow-sm dark:border-gray-600 bg-gradient-to-br from-slate-200 via-slate-50 to-slate-100 dark:border-slate-700 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
 					<Label htmlFor="qr-type-select" class="mb-2 block text-base font-medium dark:text-white">
 						QR Code Type
 					</Label>
@@ -137,7 +137,7 @@
 				</div>
 
 				<!-- Enter Details -->
-				<div class="rounded-lg border bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-gray-800">
+				<div class="rounded-lg border p-6 shadow-sm dark:border-gray-600 bg-gradient-to-br from-slate-200 via-slate-50 to-slate-100 dark:border-slate-700 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
 					<Label class="mb-4 block text-lg font-semibold text-gray-900 dark:text-white">
 						Enter Details
 					</Label>

@@ -35,7 +35,7 @@
 	}
 </script>
 
-<div class="rounded-lg border bg-white p-6 shadow-sm dark:border-gray-600 dark:bg-gray-800">
+<div class="rounded-lg border bg-gradient-to-br from-slate-200 via-slate-50 to-slate-100 dark:border-slate-700 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-6 shadow-sm dark:border-gray-600 dark:bg-gray-800">
 	<h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">QR Code Preview</h2>
 
 	<div class="flex flex-col items-center">

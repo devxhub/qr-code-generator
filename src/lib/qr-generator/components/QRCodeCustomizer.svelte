@@ -45,7 +45,7 @@
 </script>
 
 <div
-	class="space-y-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950"
+	class="space-y-6 rounded-lg border border-slate-200 p-6 shadow-sm dark:border-slate-800 bg-gradient-to-br from-slate-200 via-slate-50 to-slate-100 dark:border-slate-700 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-slate-900 dark:text-white"
 >
 	<h3 class="text-lg font-semibold text-slate-900 dark:text-white">Customize QR Code</h3>
 
@@ -53,7 +53,7 @@
 		<!-- Size Range Input -->
 		<div class="space-y-2">
 			<Label htmlFor="size-range"
-				>Size: <span class="font-semibold text-slate-900 dark:text-white">{size}px</span></Label
+				>Size: <span class="font-semibold">{size}px</span></Label
 			>
 			<Slider id="size-range" min={200} max={800} step={50} bind:value={size} class="mt-2" />
 		</div>

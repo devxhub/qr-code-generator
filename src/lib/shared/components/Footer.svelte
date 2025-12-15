@@ -28,20 +28,34 @@
 		socialLinks?: SocialLink[];
 	}
 
-	const defaultSections: FooterSection[] = [
-		{
-			title: 'Features',
-			items: ['Feature 1', 'Feature 2', 'Feature 3', 'Feature 4']
-		},
-		{
-			title: 'Options',
-			items: ['Option 1', 'Option 2', 'Option 3', 'Option 4']
-		},
-		{
-			title: 'Products',
-			items: ['Product 1', 'Product 2', 'Product 3']
-		}
-	];
+const defaultSections: FooterSection[] = [
+	{
+		title: 'Features',
+		items: [
+			'URL, text, contact, SMS, email, WiFi, phone, location',
+			'Instant QR generation with live preview',
+			'100% client-side and privacy-friendly',
+		]
+	},
+	{
+		title: 'Options',
+		items: [
+			'Size control from 200px to 800px',
+			'Foreground/background color pickers',
+			'Error correction levels L / M / Q / H',
+			'Auto-regenerates as you type'
+		]
+	},
+	{
+		title: 'Products',
+		items: [
+			'PNG download with transparency',
+			'PDF export ready for print',
+			'Reusable QR components',
+			'Feature-based code structure'
+		]
+	}
+];
 
 	const defaultAddresses: Address[] = [
 		{
@@ -81,7 +95,7 @@
 		companyUrl = 'https://devxhub.com',
 		description = 'Create beautiful, customizable tools for any purpose.',
 		logoSrc = '/logo.webp',
-		brandName = 'App',
+		brandName = 'QR Code',
 		sections = defaultSections,
 		addresses = defaultAddresses,
 		socialLinks = defaultSocialLinks
@@ -90,7 +104,7 @@
 	const currentYear = new Date().getFullYear();
 </script>
 
-<footer class="border-t border-slate-200 bg-slate-900 text-slate-300">
+<footer class="border-t border-slate-200 bg-slate-200 dark:border-slate-700 dark:bg-slate-900">
 	<div class="mx-auto max-w-7xl px-6 py-8">
 		<!-- Main Footer Content -->
 		<div class="mb-8">
@@ -104,9 +118,9 @@
 						loading="lazy"
 						aria-hidden="true"
 					/>
-					<span class="text-lg font-semibold text-white">{brandName}</span>
+					<span class="text-lg font-semibold text-slate-900 dark:text-slate-100">{brandName}</span>
 				</div>
-				<p class="text-sm leading-relaxed text-slate-400">
+				<p class="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
 					{description}
 				</p>
 			</div>
@@ -115,7 +129,7 @@
 			<div class="grid grid-cols-1 gap-8 md:grid-cols-3">
 				{#each sections as section (section.title)}
 					<div>
-						<h3 class="mb-4 text-sm font-semibold tracking-wide text-white uppercase">
+						<h3 class="mb-4 text-sm font-semibold tracking-wide text-slate-900 dark:text-slate-100 uppercase">
 							{section.title}
 						</h3>
 						<ul class="space-y-2">
@@ -124,14 +138,14 @@
 									{#if section.title === 'Products'}
 										<button
 											type="button"
-											class="text-sm text-slate-400 transition-colors duration-200 hover:text-slate-200"
+											class="text-sm text-slate-600 transition-colors duration-200 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100"
 											aria-label={`View ${item}`}
 										>
 											{item}
 										</button>
 									{:else}
 										<span
-											class="cursor-default text-sm text-slate-400 transition-colors duration-200 hover:text-slate-200"
+											class="cursor-default text-sm text-slate-600 transition-colors duration-200 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100"
 										>
 											{item}
 										</span>
@@ -145,7 +159,7 @@
 		</div>
 
 		<!-- Divider -->
-		<div class="mt-8 border-t border-slate-700 pt-8"></div>
+		<div class="mt-8 border-t border-slate-400 dark:border-slate-700 pt-8"></div>
 
 		<!-- Addresses Section -->
 		<div class="mb-8">
@@ -164,7 +178,7 @@
 						</div>
 
 						<!-- Country Name -->
-						<p class="mb-4 font-semibold text-white">{addr.country}</p>
+						<p class="mb-4 font-semibold text-slate-900 dark:text-slate-100">{addr.country}</p>
 
 						<!-- Address with Icon -->
 						<div class="mb-3 flex gap-3">
@@ -175,7 +189,7 @@
 								loading="lazy"
 								aria-hidden="true"
 							/>
-							<address class="text-sm text-slate-400 not-italic">{addr.address}</address>
+							<address class="text-sm text-slate-600 dark:text-slate-300 not-italic">{addr.address}</address>
 						</div>
 
 						<!-- Phone with Icon -->
@@ -189,7 +203,7 @@
 							/>
 							<a
 								href={`tel:${addr.phone.replace(/\s/g, '')}`}
-								class="text-sm text-slate-400 hover:text-slate-200"
+								class="text-sm text-slate-600 transition-colors duration-200 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100"
 								aria-label={`Phone number for ${addr.country}: ${addr.phone}`}
 							>
 								{addr.phone}
@@ -201,18 +215,18 @@
 		</div>
 
 		<!-- Divider -->
-		<div class="mt-8 border-t border-slate-700 pt-8"></div>
+		<div class="mt-8 border-t border-slate-400 dark:border-slate-700 pt-8"></div>
 
 		<!-- Bottom Section -->
 		<div class="flex flex-col items-center justify-between gap-6 md:flex-row">
 			<!-- Copyright -->
-			<p class="text-sm text-slate-400">
+			<p class="text-sm text-slate-600 dark:text-slate-400">
 				&copy; {currentYear}
 				<a
 					href={companyUrl}
 					target="_blank"
 					rel="external noopener noreferrer"
-					class="font-medium text-blue-400 transition-colors duration-200 hover:text-blue-300"
+					class="font-medium text-blue-600 transition-colors duration-200 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
 				>
 					{companyName}
 				</a>

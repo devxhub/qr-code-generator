@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
+@custom-variant dark (&:where(.dark, .dark *));
 
 /* Ensure the app takes the full height of the viewport */
 html,
