@@ -101,7 +101,7 @@
 
 <main
 	id="main-content"
-	class="bg-liner-to-b flex flex-1 flex-col from-slate-50 to-white"
+	class="bg-gradient-to-b from-slate-200 to-slate-50 dark:from-slate-900 dark:to-slate-950  flex flex-1 flex-col"
 	tabindex="-1"
 >
 	<div class="mx-auto w-full max-w-7xl px-6 py-8">
